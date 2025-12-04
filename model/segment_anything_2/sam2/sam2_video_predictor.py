@@ -38,17 +38,17 @@ class SAM2VideoPredictor(SAM2Base):
     @torch.inference_mode()
     def init_state(
         self,
-        video_path,
+        video,
         offload_video_to_cpu=False,
         offload_state_to_cpu=False,
-        async_loading_frames=False,
+        # async_loading_frames=False,
     ):
-        """Initialize a inference state."""
-        images, video_height, video_width = load_video_frames(
-            video_path=video_path,
-            image_size=self.image_size,
-            offload_video_to_cpu=offload_video_to_cpu,
-            async_loading_frames=async_loading_frames,
+        video_height, video_width = video.shape[-2:]
+        images = F.interpolate(
+                    video,
+                    size=(self.image_size, self.image_size),
+                    mode="bilinear",
+                    antialias=True,
         )
         inference_state = {}
         inference_state["images"] = images
